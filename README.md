@@ -1,106 +1,129 @@
-.
+# 💬 WhatsApp GPT Bot (Twilio)
 
-💬 WhatsApp GPT Bot (Twilio)
+A **minimal AI-powered WhatsApp chatbot** built using **Flask** and **Twilio**, designed to provide seamless, intelligent, and conversational experiences.  
+It generates **AI-based text responses** and can optionally deliver **text-to-speech (TTS) audio messages** asynchronously.  
+This project is optimized for quick demonstrations and fulfills the AI Internship assignment requirements. ⚙️  
 
-A minimal AI-powered WhatsApp chatbot built using Flask and Twilio, designed to provide seamless and intelligent chat experiences. It generates AI-based text responses and can optionally deliver text-to-speech (TTS) audio messages asynchronously. This setup is optimized for quick demonstrations and assignment submissions. ⚙️
+---
 
-🌟 Features
+## 🧠 About the Project  
 
-🤖 Greeting on First Contact — The bot warmly welcomes the user upon initial interaction.
+The WhatsApp GPT Bot enables users to interact naturally through WhatsApp using AI-generated responses.  
+It integrates GPT via **OpenRouter API**, with a **Google Gemini fallback** to ensure uninterrupted replies even during API failures or rate limits.  
+Additionally, it supports optional **voice messages** using **Murf SDK** and **gTTS**, making the experience more dynamic and human-like. 🎧  
 
-💬 Free-text Conversation with AI — Powered by OpenRouter for GPT-style responses, with an automatic Gemini fallback to ensure reliability.
+---
 
-🔊 TTS Audio Reply (Murf SDK → gTTS Fallback) — Converts text responses into speech and sends them as a second asynchronous message for a richer user experience.
+## 🌟 Features  
 
-🔁 “Continue? (yes/no)” Loop — After each reply, the bot checks if the user wishes to continue the conversation, skipping audio generation for this prompt.
+- 🤖 **Greeting on First Contact** — The bot warmly welcomes the user upon their first message.  
+- 💬 **Free-text Conversation with AI** — Powered by **OpenRouter** for GPT-style responses with a **Gemini fallback** for reliability.  
+- 🔊 **TTS Audio Reply (Murf SDK → gTTS Fallback)** — Converts responses into speech and sends them asynchronously as a second message.  
+- 🔁 **“Continue? (yes/no)” Loop** — After each response, the bot asks if the user wants to continue chatting, skipping audio for this prompt.  
 
-🧩 Prerequisites
+---
 
-🐍 Python 3.10+
+## 🧩 Prerequisites  
 
-📱 Twilio WhatsApp Sandbox or Approved Sender
+- 🐍 Python 3.10+  
+- 📱 Twilio WhatsApp Sandbox or Approved Business Sender  
+- 🌐 ngrok (or any public HTTPS tunneling service)  
 
-🌐 ngrok (or any public HTTPS tunneling service)
+---
 
-⚙️ Setup Instructions
+## ⚙️ Setup Instructions  
 
-1️⃣ Install Dependencies
-
+1️⃣ **Install Dependencies**  
+```bash
 pip install -r requirements.txt
+```
 
-
-2️⃣ Configure Environment Variables (Windows PowerShell Example)
-
+2️⃣ **Configure Environment Variables** (Windows PowerShell Example)  
+```powershell
 setx TWILIO_ACCOUNT_SID "<your_sid>"
 setx TWILIO_AUTH_TOKEN "<your_auth_token>"
 setx PUBLIC_BASE_URL "https://<your-ngrok-subdomain>.ngrok-free.app"
+```
 
-
-👉 Optional: Enable simple TTS fallback
-
+👉 Optional: Enable simple TTS fallback  
+```powershell
 setx USE_SIMPLE_TTS "true"  # uses gTTS locally
+```
 
-
-3️⃣ Start the Flask Server
-
+3️⃣ **Start the Flask Server**  
+```bash
 python app.py
+```
 
-
-4️⃣ Expose Server via ngrok (or use the provided script)
-
+4️⃣ **Expose Server via ngrok** (or use the provided script)  
+```powershell
 powershell -ExecutionPolicy Bypass -File .\ngrok-setup.ps1
+```
 
+5️⃣ **Set Twilio WhatsApp Webhook**  
+- When a new ngrok URL is displayed, update your Twilio Sandbox webhook:  
+  - **When a message comes in:** `https://<your-ngrok>/webhook`  
 
-5️⃣ Set Twilio WhatsApp Webhook
+---
 
-When a new ngrok URL is displayed, update your Twilio Sandbox webhook:
+## 💬 Usage  
 
-When a message comes in: https://<your-ngrok>/webhook
+- Send a message like **“hi”** or **“hello”** to your WhatsApp sandbox number.  
+- You’ll receive a friendly greeting — “Hey there! 👋 How are you doing today?”  
+- The bot then offers an option to **Start Chat**.  
+- Once started, it replies to all free-text messages with **AI-generated responses**.  
+- Finally, it ends with a polite message — “Thank you for chatting with me! 🌟”.  
 
-💬 Usage
+---
 
-Send a simple “hi” or “hello” to your WhatsApp sandbox number.
+## 🗂️ Notes  
 
-Receive a friendly greeting and start chatting freely.
+- 🎧 Audio files are generated dynamically in the `/audio/<filename>` directory.  
+- ⏩ TTS audio replies are sent asynchronously for smoother user experience.  
+- 🔇 No audio is generated for the “continue” prompt.  
 
-After each AI response, the bot will ask “Continue? (yes/no)” — reply accordingly.
+---
 
-🗂️ Notes
+## 🧱 Repository Info  
 
-🎧 Audio files are stored in /audio/<filename> and generated dynamically.
+- Keep `info.txt` for quick reference.  
+- The `ngrok-setup.ps1` script simplifies ngrok authentication and tunnel creation.  
+- Clean and minimal structure optimized for demonstration and performance.  
 
-⏩ For efficiency, TTS audio messages are sent asynchronously as a second message.
+---
 
-🔇 No audio is generated for the continue prompt.
+## 🧩 Troubleshooting  
 
-🧱 Repository Info
+- ⚠️ If **OpenRouter** free tier is rate-limited (HTTP 429), the bot automatically switches to **Gemini**.  
+- 🔁 If **Murf TTS** fails to generate audio, it falls back to **gTTS**.  
+- 🌍 Ensure your `PUBLIC_BASE_URL` points to a valid **HTTPS** address accessible by Twilio.  
 
-Keep info.txt for quick reference.
+---
 
-Development scripts include ngrok-setup.ps1 for rapid ngrok configuration and authentication.
+## 🧰 Tools Used  
 
-🧩 Troubleshooting
+- 🧩 **Flask** — Backend framework for handling routes and Twilio webhooks.  
+- 💬 **Twilio API** — Enables WhatsApp communication and message automation.  
+- 🔗 **ngrok** — Exposes the local Flask server to the internet via secure HTTPS tunneling.  
+- 🧠 **OpenRouter API** — Provides GPT-style text generation capabilities.  
+- ⚡ **Google Gemini** — Fallback AI model for enhanced reliability.  
+- 🎧 **Murf SDK** & **gTTS** — Generate and deliver audio responses.  
+- 🧾 **Python-dotenv** — Secure management of environment variables.  
+- ⚙️ **PowerShell Scripts** — Simplify ngrok setup and webhook configuration.  
 
-⚠️ If OpenRouter free tier is rate-limited (HTTP 429), the bot automatically falls back to Gemini.
+---
 
-🔁 If Murf TTS fails to download, it reverts to gTTS for speech generation.
+## 💡 Additional Insights  
 
-🌍 Ensure your PUBLIC_BASE_URL is a valid HTTPS URL accessible by Twilio for media delivery.
+While building this bot, I also explored **Gupshup**, a WhatsApp Business API platform that offers a simpler setup and pre-built templates for quick chatbot deployment.  
+However, I selected **Twilio** for its **flexibility, Python compatibility, and better webhook control**.  
+Understanding both platforms provided a broader perspective on WhatsApp automation workflows. 🚀  
 
-🧰 Tools Used
+---
 
-🧩 Flask — For backend server and webhook handling.
+## 🏁 Conclusion  
 
-💬 Twilio API — For WhatsApp message exchange and automation.
+This project demonstrates effective integration of **AI models**, **real-time API communication**, and **voice automation** — all through a simple WhatsApp interface.  
+It showcases **error-handling, fallback strategies, and asynchronous responses**, ensuring reliability even under free-tier limitations.  
 
-🔗 ngrok — For tunneling localhost to public HTTPS endpoints.
-
-🧠 OpenRouter API — For GPT-style text generation.
-
-⚡ Google Gemini — As an intelligent fallback model for continuity.
-
-🎧 Murf SDK & gTTS — For text-to-speech (TTS) audio generation.
-
-🧾 Python-dotenv — For secure environment variable management.
-
-⚙️ PowerShell Scripts — For quick ngrok setup and configuration.
+**Thank you for reading! 🌟**
