@@ -1,64 +1,106 @@
-# WhatsApp GPT Bot (Twilio)
+.
 
-A minimal WhatsApp chatbot using Flask + Twilio. It replies with AI-generated text and can send TTS audio asynchronously. Optimized for quick demo and assignment requirements.
+💬 WhatsApp GPT Bot (Twilio)
 
-## Features
-- Greeting on first contact
-- Free-text conversation with AI (OpenRouter → Gemini fallback)
-- **TTS audio reply** (Murf SDK → gTTS fallback), sent as a second message
-- **"Continue? (yes/no)" loop** after each reply; skipping audio for that prompt
+A minimal AI-powered WhatsApp chatbot built using Flask and Twilio, designed to provide seamless and intelligent chat experiences. It generates AI-based text responses and can optionally deliver text-to-speech (TTS) audio messages asynchronously. This setup is optimized for quick demonstrations and assignment submissions. ⚙️
 
-## Prerequisites
-- Python 3.10+
-- Twilio WhatsApp sandbox or approved sender
-- ngrok (or public HTTPS)
+🌟 Features
 
-## Setup
-1) Install deps
-```bash
+🤖 Greeting on First Contact — The bot warmly welcomes the user upon initial interaction.
+
+💬 Free-text Conversation with AI — Powered by OpenRouter for GPT-style responses, with an automatic Gemini fallback to ensure reliability.
+
+🔊 TTS Audio Reply (Murf SDK → gTTS Fallback) — Converts text responses into speech and sends them as a second asynchronous message for a richer user experience.
+
+🔁 “Continue? (yes/no)” Loop — After each reply, the bot checks if the user wishes to continue the conversation, skipping audio generation for this prompt.
+
+🧩 Prerequisites
+
+🐍 Python 3.10+
+
+📱 Twilio WhatsApp Sandbox or Approved Sender
+
+🌐 ngrok (or any public HTTPS tunneling service)
+
+⚙️ Setup Instructions
+
+1️⃣ Install Dependencies
+
 pip install -r requirements.txt
-```
 
-2) Configure environment (Windows PowerShell example)
-```powershell
+
+2️⃣ Configure Environment Variables (Windows PowerShell Example)
+
 setx TWILIO_ACCOUNT_SID "<your_sid>"
 setx TWILIO_AUTH_TOKEN "<your_auth_token>"
 setx PUBLIC_BASE_URL "https://<your-ngrok-subdomain>.ngrok-free.app"
-```
-Optionally toggle simple TTS fallback:
-```powershell
+
+
+👉 Optional: Enable simple TTS fallback
+
 setx USE_SIMPLE_TTS "true"  # uses gTTS locally
-```
 
-3) Start server
-```bash
+
+3️⃣ Start the Flask Server
+
 python app.py
-```
 
-4) Expose via ngrok (or use the provided script)
-```powershell
+
+4️⃣ Expose Server via ngrok (or use the provided script)
+
 powershell -ExecutionPolicy Bypass -File .\ngrok-setup.ps1
-```
 
-5) Set Twilio WhatsApp webhook
-- When a new ngrok URL is shown, set your Twilio WhatsApp sandbox/webhook:
-  - When a message comes in: `https://<your-ngrok>/webhook`
 
-## Usage
-- Send "hi" or "hello" to your WhatsApp sandbox number.
-- You’ll get a greeting. Type anything to chat.
-- After each answer, bot asks if you want to continue; reply yes/no.
+5️⃣ Set Twilio WhatsApp Webhook
 
-## Notes
-- Audio files are served from `/audio/<filename>` and generated into the `audio/` folder.
-- For speed, TTS audio is sent in a second, asynchronous message.
-- Audio is not generated for the "continue" prompt.
+When a new ngrok URL is displayed, update your Twilio Sandbox webhook:
 
-## Repository
-- Keep `info.txt` for quick reference; other dev artifacts were removed during cleanup.
-- Scripts: `ngrok-setup.ps1` for quick ngrok auth and tunnel.
+When a message comes in: https://<your-ngrok>/webhook
 
-## Troubleshooting
-- If OpenRouter free tier is rate-limited (429), the app falls back to Gemini.
-- If Murf TTS download fails, the app falls back to gTTS.
-- If audio links fail to deliver, ensure `PUBLIC_BASE_URL` is set to an HTTPS URL reachable by Twilio.
+💬 Usage
+
+Send a simple “hi” or “hello” to your WhatsApp sandbox number.
+
+Receive a friendly greeting and start chatting freely.
+
+After each AI response, the bot will ask “Continue? (yes/no)” — reply accordingly.
+
+🗂️ Notes
+
+🎧 Audio files are stored in /audio/<filename> and generated dynamically.
+
+⏩ For efficiency, TTS audio messages are sent asynchronously as a second message.
+
+🔇 No audio is generated for the continue prompt.
+
+🧱 Repository Info
+
+Keep info.txt for quick reference.
+
+Development scripts include ngrok-setup.ps1 for rapid ngrok configuration and authentication.
+
+🧩 Troubleshooting
+
+⚠️ If OpenRouter free tier is rate-limited (HTTP 429), the bot automatically falls back to Gemini.
+
+🔁 If Murf TTS fails to download, it reverts to gTTS for speech generation.
+
+🌍 Ensure your PUBLIC_BASE_URL is a valid HTTPS URL accessible by Twilio for media delivery.
+
+🧰 Tools Used
+
+🧩 Flask — For backend server and webhook handling.
+
+💬 Twilio API — For WhatsApp message exchange and automation.
+
+🔗 ngrok — For tunneling localhost to public HTTPS endpoints.
+
+🧠 OpenRouter API — For GPT-style text generation.
+
+⚡ Google Gemini — As an intelligent fallback model for continuity.
+
+🎧 Murf SDK & gTTS — For text-to-speech (TTS) audio generation.
+
+🧾 Python-dotenv — For secure environment variable management.
+
+⚙️ PowerShell Scripts — For quick ngrok setup and configuration.
