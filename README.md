@@ -3,7 +3,9 @@
 A **minimal AI-powered WhatsApp chatbot** built using **Flask** and **Twilio**, designed to provide seamless, intelligent, and conversational experiences.  
 It generates **AI-based text responses** and can optionally deliver **text-to-speech (TTS) audio messages** asynchronously.  
 This project is optimized for quick demonstrations and fulfills the AI Internship assignment requirements. ⚙️  
-
+<p align="center">
+  <img src="./image.png" alt="WHATSAPPBOT" width="600"/>
+</p>
 ---
 
 ## 🧠 About the Project  
