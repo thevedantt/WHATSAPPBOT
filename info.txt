@@ -1,0 +1,121 @@
+To configure and run ngrok (Windows PowerShell):
+
+1) One-time auth setup and start tunnel
+   powershell -ExecutionPolicy Bypass -File .\ngrok-setup.ps1
+
+2) Or manual commands
+   ngrok config add-authtoken 33jvteMdVtyhQr6O0FMD1lzlxQn_3Mzpb976boSSeQBAqvnqr
+   ngrok http 5000
+
+import os
+from collections import defaultdict, deque
+from pathlib import Path
+from flask import Flask, request, Response, render_template
+from twilio.twiml.messaging_response import MessagingResponse
+
+# OpenRouter GPT client for text + TTS
+from openai import OpenAI
+
+OPENROUTER_API_KEY = "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"
+GPT_CLIENT = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=OPENROUTER_API_KEY
+)
+
+# Twilio WhatsApp number
+TWILIO_WHATSAPP_NUMBER = "whatsapp:+14155238886"
+BOT_PERSONA = "You are a friendly WhatsApp assistant. Answer clearly and briefly."
+MAX_HISTORY = 6
+
+app = Flask(__name__, template_folder="templates")
+conversations = defaultdict(lambda: deque(maxlen=MAX_HISTORY))
+
+# Make sure static folder exists for audio files
+STATIC_FOLDER = os.path.join(os.path.dirname(__file__), "static")
+os.makedirs(STATIC_FOLDER, exist_ok=True)
+
+
+@app.route("/")
+def index():
+    if Path("templates/index.html").exists():
+        return render_template("index.html")
+    return "WhatsApp GPT bot is running."
+
+
+@app.route("/webhook", methods=["POST"])
+def webhook():
+    incoming_msg = request.values.get("Body", "").strip()
+    from_number = request.values.get("From", "unknown").replace(":", "_")
+
+    print(f"[DEBUG] Incoming message from {from_number}: {incoming_msg}")
+    resp = MessagingResponse()
+
+    if not incoming_msg:
+        resp.message("Sorry, I didn't receive any text. Please send a message.")
+        return Response(str(resp), mimetype="application/xml")
+
+    # Greeting messages
+    if incoming_msg.lower() in ("hi", "hello", "hey", "start"):
+        greeting = "Hey! I'm your AI assistant. Ask me anything — I'll try to help. 😊"
+        conversations[from_number].append({"role": "assistant", "content": greeting})
+        resp.message(greeting)
+        return Response(str(resp), mimetype="application/xml")
+
+    # Append user message
+    conversations[from_number].append({"role": "user", "content": incoming_msg})
+
+    # Build messages for GPT
+    messages = [{"role": "system", "content": BOT_PERSONA}]
+    for entry in conversations[from_number]:
+        messages.append({"role": entry["role"], "content": entry["content"]})
+
+    assistant_text = None
+    audio_file_path = None
+
+    # Generate text response
+    try:
+        completion = GPT_CLIENT.chat.completions.create(
+            extra_headers={
+                "HTTP-Referer": "http://localhost:5000",
+                "X-Title": "WhatsApp GPT Bot"
+            },
+            extra_body={},
+            model="openai/gpt-oss-20b:free",
+            messages=[{"role": "user", "content": messages[-1]["content"]}]
+        )
+        assistant_text = completion.choices[0].message.content.strip()
+        print(f"[DEBUG] GPT response: {assistant_text}")
+    except Exception as e:
+        print("[ERROR] GPT generation failed:", e)
+        assistant_text = "Sorry, AI service is unavailable."
+
+    # Generate voice using GPT TTS (Whisper)
+    try:
+        audio_resp = GPT_CLIENT.audio.speech.create(
+            model="gpt-4o-mini-tts",
+            voice="alloy",
+            input=assistant_text
+        )
+        audio_file_path = os.path.join(STATIC_FOLDER, f"{from_number}.mp3")
+        with open(audio_file_path, "wb") as f:
+            f.write(audio_resp.audio)
+    except Exception as e:
+        print("[ERROR] TTS generation failed:", e)
+        audio_file_path = None
+
+    # Store assistant reply
+    conversations[from_number].append({"role": "assistant", "content": assistant_text})
+
+    # Send text + voice
+    if audio_file_path and os.path.exists(audio_file_path):
+        media_url = f"{request.url_root}static/{os.path.basename(audio_file_path)}"
+        resp.message(assistant_text).media(media_url)
+    else:
+        resp.message(assistant_text)
+
+    return Response(str(resp), mimetype="application/xml")
+
+
+if __name__ == "__main__":
+    print("[INFO] Starting Flask server on port 5000...")
+    app.run(host="0.0.0.0", port=5000, debug=True)
