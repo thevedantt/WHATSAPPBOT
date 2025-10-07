@@ -16,7 +16,6 @@ from twilio.twiml.messaging_response import MessagingResponse
 # OpenRouter GPT client for text + TTS
 from openai import OpenAI
 
-OPENROUTER_API_KEY = "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"
 GPT_CLIENT = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY
