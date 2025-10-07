@@ -20,6 +20,7 @@ Additionally, it supports optional **voice messages** using **Murf SDK** and **g
 - 💬 **Free-text Conversation with AI** — Powered by **OpenRouter** for GPT-style responses with a **Gemini fallback** for reliability.  
 - 🔊 **TTS Audio Reply (Murf SDK → gTTS Fallback)** — Converts responses into speech and sends them asynchronously as a second message.  
 - 🔁 **“Continue? (yes/no)” Loop** — After each response, the bot asks if the user wants to continue chatting, skipping audio for this prompt.  
+![Preview](image.png)
 
 ---
 
